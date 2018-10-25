@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Promitor.Core.Telemetry;
 using Promitor.Scraper.Host.Validation.Exceptions;
 using Promitor.Scraper.Host.Validation.Interfaces;
 
@@ -8,6 +9,8 @@ namespace Promitor.Scraper.Host.Validation
 {
     public static class Validator
     {
+        private static ApplicationInsightsTelemetry _telemetry = new ApplicationInsightsTelemetry();
+
         public static void Run(List<IValidationStep> validationSteps)
         {
             if (validationSteps == null)
@@ -81,6 +84,14 @@ namespace Promitor.Scraper.Host.Validation
                 : $"\tValidation step failed. Error(s): {validationResult.Message}";
             Console.WriteLine(validationOutcome);
 
+            _telemetry.Trace($"Validation step {currentStep}/{totalSteps}: {validationStep.ComponentName}", new Dictionary<string, string>()
+            {
+                { "current step", currentStep.ToString() },
+                { "total steps", totalSteps.ToString() },
+                { "component name", validationStep.ComponentName },
+                { "success", validationResult.IsSuccessful.ToString() },
+                { "message", validationResult.Message }
+            });
             return validationResult;
         }
     }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Microsoft.ApplicationInsights;
 using Microsoft.ApplicationInsights.Extensibility;
 using Promitor.Core.Telemetry.Interfaces;
@@ -28,6 +29,11 @@ namespace Promitor.Core.Telemetry
         public void Track(Exception exception)
         {
             _telemetryClient.TrackException(exception);
+        }
+
+        public void Trace(string message, IDictionary<string, string> properties)
+        {
+            _telemetryClient.TrackTrace(message, properties);
         }
     }
 }
